@@ -109,6 +109,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "guardrails-supervisor"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "io-extras"
 version = "0.18.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -1,50 +1,62 @@
 # GuardRails IDE
 
-GuardRails IDE is a security-first development environment for running extensions,
-language tools, terminals, and AI agents without ambient access to developer data.
+GuardRails IDE is a security-first development environment built from a pinned
+Code-OSS workbench and an independent native Rust security supervisor.
 
-The project is starting with the security kernel rather than a cosmetic editor clone.
-The first executable component is a deny-by-default capability policy engine. Every
-later filesystem, process, network, secret, and tool broker will depend on this small,
-testable contract.
+The editor provides the familiar workspace, editing, search, source control,
+terminal, debugging, language-service, and extension experiences. GuardRails adds
+enforceable boundaries for extensions, language tools, terminals, and AI agents:
+they do not inherit ambient access to developer files, processes, network, or
+credentials.
+
+## Current status
+
+This repository now contains Code-OSS 1.132.0 (`df53daabb18cd157bdb08c7f01c34df936cf12f4`)
+and the initial Rust security harness. The policy evaluator and read-only filesystem
+broker are tested prototypes. The Code-OSS shell is **not yet** connected to the Rust
+supervisor, so extensions, terminals, and agents must not be described as sandboxed.
+
+The public extension marketplace remains disabled while GuardRails develops a curated
+extension catalog, signed capability manifests, and broker conformance tests.
 
 ## Repository layout
 
 ```text
-crates/guardrails-policy/   Capability model and deterministic evaluator
-crates/guardrails-fs-broker/ Confined workspace reads and audit integration
-docs/architecture/         Trust boundaries and repository decisions
-docs/planning/             Phases, milestones, and acceptance gates
+src/                         Code-OSS workbench and platform sources
+extensions/                  Built-in Code-OSS extensions
+crates/guardrails-policy/    Deny-by-default capability evaluation
+crates/guardrails-fs-broker/ Confined, audited workspace reads
+docs/architecture/           GuardRails trust-boundary decisions
+docs/planning/               Delivery roadmap and acceptance gates
 ```
 
-## Quick start
+## Development
+
+Use the Node version recorded in `.nvmrc`, then install and compile the desktop
+workbench:
 
 ```bash
-cargo test --workspace
+npm ci
+npm run compile
+./scripts/code.sh
+```
+
+Validate the native security harness independently:
+
+```bash
 cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace --locked
 ```
 
-Try the end-to-end filesystem broker against this repository:
+## Security invariants
 
-```bash
-cargo run -p guardrails-fs-broker -- \
-  . agent:demo README.md 'workspace/**'
-```
-
-The CLI is a development harness, not a general-purpose `cat`: it applies policy,
-rejects non-normalized paths, confines traversal to the opened workspace authority,
-limits reads to 1 MiB, blocks environment files, and audits the authorization result.
-
-## Product invariants
-
-- No extension or agent inherits the IDE process environment or host identity.
-- No matching capability means denial.
-- Explicit deny rules override allows.
-- Files, processes, network destinations, secrets, and tools are brokered resources.
-- Approval is bound to an exact normalized request, not a vague session prompt.
+- No matching capability means denial; explicit denies override allows.
+- Files, processes, network destinations, credentials, and tools are brokered.
+- Approval is bound to one normalized request and expires.
 - Secret values never enter model context or ordinary extension responses.
-- Every security decision emits secret-safe audit metadata.
+- Broker, policy, approval, and audit failures fail closed.
 
-See [the architecture decision](docs/architecture/0001-code-oss-and-native-broker.md)
-and [delivery plan](docs/planning/roadmap.md) for the implementation strategy.
+See [the architecture decision](docs/architecture/0001-code-oss-and-native-broker.md),
+[the threat model](docs/architecture/threat-model.md), and
+[the delivery roadmap](docs/planning/roadmap.md).
