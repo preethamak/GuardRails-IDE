@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.guardrails-security-view {
+	padding: 14px;
+	line-height: 1.45;
+}
+
+.guardrails-security-hero {
+	padding: 14px;
+	border: 1px solid color-mix(in srgb, var(--vscode-focusBorder) 45%, transparent);
+	border-radius: 10px;
+	background: linear-gradient(135deg, color-mix(in srgb, var(--vscode-focusBorder) 18%, var(--vscode-sideBar-background)), var(--vscode-sideBar-background));
+}
+
+.guardrails-security-hero-icon {
+	font-size: 24px;
+	color: var(--vscode-focusBorder);
+}
+
+.guardrails-security-title {
+	margin: 10px 0 4px;
+	font-size: 16px;
+	font-weight: 650;
+}
+
+.guardrails-security-summary,
+.guardrails-security-card-body {
+	margin: 0;
+	color: var(--vscode-descriptionForeground);
+}
+
+.guardrails-security-status {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 14px 2px;
+	font-size: 12px;
+	color: var(--vscode-descriptionForeground);
+}
+
+.guardrails-security-status-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--vscode-testing-iconPassed);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--vscode-testing-iconPassed) 18%, transparent);
+}
+
+.guardrails-security-cards {
+	display: grid;
+	gap: 8px;
+}
+
+.guardrails-security-card {
+	padding: 12px;
+	border-radius: 8px;
+	background: var(--vscode-sideBarSectionHeader-background);
+}
+
+.guardrails-security-card-title {
+	margin: 0 0 5px;
+	font-size: 13px;
+	font-weight: 600;
+}
