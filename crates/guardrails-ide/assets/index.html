@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GuardRails IDE</title>
+    <link rel="stylesheet" href="/app.css">
+  </head>
+  <body>
+    <header class="titlebar">
+      <div class="brand"><span class="shield">G</span><strong>GuardRails</strong><span>IDE</span></div>
+      <div class="command">⌘ &nbsp; Search workspace or run a secure command</div>
+      <div class="status"><span class="status-dot"></span> Local broker</div>
+    </header>
+    <main class="layout">
+      <nav class="rail" aria-label="Primary navigation">
+        <button class="rail-button active" aria-label="Explorer">⌘</button>
+        <button class="rail-button" aria-label="Security">◇</button>
+        <button class="rail-button" aria-label="Agents">◎</button>
+      </nav>
+      <aside class="sidebar">
+        <div class="panel-title">EXPLORER</div>
+        <div class="workspace-name" id="workspace-name">Loading workspace…</div>
+        <div class="file-tree" id="file-tree" aria-label="Workspace files"></div>
+        <section class="guardrail-card">
+          <div class="guardrail-heading"><span class="status-dot"></span> Guardrails active</div>
+          <div class="metric"><span>Network</span><strong>Blocked</strong></div>
+          <div class="metric"><span>Hidden files</span><strong>Protected</strong></div>
+          <div class="metric"><span>File reads</span><strong>Brokered</strong></div>
+        </section>
+      </aside>
+      <section class="workbench">
+        <div class="tabs"><div class="tab active" id="active-tab">Welcome</div></div>
+        <div class="editor-wrap">
+          <div class="welcome" id="welcome">
+            <div class="welcome-shield">G</div>
+            <p class="eyebrow">LOCAL-FIRST · DENY-BY-DEFAULT</p>
+            <h1>Your code. Behind guardrails.</h1>
+            <p class="lede">Choose a file from the explorer. Every read crosses the capability broker and appears in the audit trail.</p>
+            <div class="feature-grid">
+              <div><b>01</b><span>Workspace confined</span><small>Paths cannot escape the selected project.</small></div>
+              <div><b>02</b><span>Secrets protected</span><small>Hidden files never enter the workspace index.</small></div>
+              <div><b>03</b><span>Fully auditable</span><small>Authorization decisions stay visible.</small></div>
+            </div>
+          </div>
+          <pre class="editor hidden" id="editor"><code id="code"></code></pre>
+        </div>
+        <section class="bottom-panel">
+          <div class="bottom-tabs"><button class="selected">SECURITY AUDIT</button><button>PROBLEMS</button><button>OUTPUT</button></div>
+          <div class="audit-list" id="audit-list"><span class="muted">No broker requests yet. Open a file to create an audit event.</span></div>
+        </section>
+        <footer><span>main*</span><span>Restricted workspace</span><span class="footer-right">Policy: deny-by-default &nbsp; · &nbsp; UTF-8 &nbsp; Ln 1, Col 1</span></footer>
+      </section>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+[package]
+name = "guardrails-fs-broker"
+version = "0.1.0"
+description = "Capability-scoped filesystem broker for GuardRails IDE"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+cap-std = "3"
+guardrails-policy = { path = "../guardrails-policy" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true
