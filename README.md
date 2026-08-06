@@ -12,6 +12,7 @@ testable contract.
 
 ```text
 crates/guardrails-policy/   Capability model and deterministic evaluator
+crates/guardrails-fs-broker/ Confined workspace reads and audit integration
 docs/architecture/         Trust boundaries and repository decisions
 docs/planning/             Phases, milestones, and acceptance gates
 ```
@@ -23,6 +24,17 @@ cargo test --workspace
 cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
+
+Try the end-to-end filesystem broker against this repository:
+
+```bash
+cargo run -p guardrails-fs-broker -- \
+  . agent:demo README.md 'workspace/**'
+```
+
+The CLI is a development harness, not a general-purpose `cat`: it applies policy,
+rejects non-normalized paths, confines traversal to the opened workspace authority,
+limits reads to 1 MiB, blocks environment files, and audits the authorization result.
 
 ## Product invariants
 

@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/guardrails-policy"]
+members = ["crates/guardrails-fs-broker", "crates/guardrails-policy"]
 resolver = "2"
 
 [workspace.package]

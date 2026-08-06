@@ -50,13 +50,15 @@ open critical or high findings.
 
 ## First implementation sequence
 
-1. Capability evaluator and test corpus.
-2. Versioned IPC protocol and request authentication.
-3. Linux filesystem broker and path-escape tests.
-4. Process sandbox, egress proxy, and resource limits.
-5. Opaque credential flow and audit chain.
-6. Code-OSS shell spike and permission center.
-7. Agent patch/review/apply workflow.
+1. ~~Capability evaluator and test corpus.~~ Completed in Phase 0.
+2. ~~Read-only filesystem broker vertical slice.~~ Completed with confined traversal,
+   audit integration, size limits, a CLI, and adversarial tests.
+3. Versioned IPC protocol and request authentication.
+4. Filesystem write/apply broker with review-digest binding and rollback.
+5. Process sandbox, egress proxy, and resource limits.
+6. Opaque credential flow and production audit chain.
+7. Code-OSS shell spike and permission center.
+8. Agent patch/review/apply workflow.
 
 Broad editor customization and marketplace compatibility remain behind the native
 isolation gate; visual progress must not outrun enforceable boundaries.
