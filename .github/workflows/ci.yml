@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy,rustfmt
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: CARGO_INSTALL_ROOT=${RUNNER_TEMP}/guardrails-install ./scripts/install.sh
+      - run: test -x ${RUNNER_TEMP}/guardrails-install/bin/guardrails-ide
