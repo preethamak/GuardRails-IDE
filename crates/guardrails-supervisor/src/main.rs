@@ -1,4 +1,4 @@
-//! Development launcher for the GuardRails trusted supervisor.
+//! Development launcher for the `GuardRails` trusted supervisor.
 
 use guardrails_supervisor::Supervisor;
 use serde::Serialize;

@@ -1,4 +1,4 @@
-//! Authenticated, versioned local IPC for the GuardRails trusted supervisor.
+//! Authenticated, versioned local IPC for the `GuardRails` trusted supervisor.
 //!
 //! This crate deliberately exposes only the bootstrap handshake. Resource operations
 //! are added only after their corresponding broker can enforce them.
@@ -144,10 +144,7 @@ impl Supervisor {
                 protocol_version: PROTOCOL_VERSION,
                 principal_id: request.principal_id,
             }),
-            Ok(ClientMessage::Status) => ServerMessage::Rejected(RejectionResponse {
-                code: RejectionCode::InvalidRequest,
-            }),
-            Err(()) => ServerMessage::Rejected(RejectionResponse {
+            Ok(ClientMessage::Status) | Err(()) => ServerMessage::Rejected(RejectionResponse {
                 code: RejectionCode::InvalidRequest,
             }),
         };
@@ -202,7 +199,7 @@ mod tests {
         )
     }
 
-    fn run(request: String) -> (Option<String>, String) {
+    fn run(request: &str) -> (Option<String>, String) {
         let supervisor = Supervisor::bind(
             "127.0.0.1:0".parse().expect("address"),
             "launch-token".to_owned(),
@@ -231,7 +228,7 @@ mod tests {
 
     #[test]
     fn accepts_an_exact_token_and_binds_the_principal() {
-        let (principal, response) = run(request(
+        let (principal, response) = run(&request(
             "launch-token",
             "extension:formatter",
             PROTOCOL_VERSION,
@@ -243,10 +240,10 @@ mod tests {
 
     #[test]
     fn rejects_invalid_token_and_protocol_without_binding_a_principal() {
-        let (principal, response) = run(request("wrong", "extension:formatter", PROTOCOL_VERSION));
+        let (principal, response) = run(&request("wrong", "extension:formatter", PROTOCOL_VERSION));
         assert_eq!(principal, None);
         assert!(response.is_empty() || response.contains("authentication_failed"));
-        let (principal, response) = run(request("launch-token", "extension:formatter", 99));
+        let (principal, response) = run(&request("launch-token", "extension:formatter", 99));
         assert_eq!(principal, None);
         assert!(response.is_empty() || response.contains("unsupported_protocol"));
     }
