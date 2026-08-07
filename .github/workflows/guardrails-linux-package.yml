@@ -88,14 +88,14 @@ jobs:
           test -x ../VSCode-linux-x64/guardrails-ide
 
       - name: Upload Debian installer
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: guardrails-ide-linux-amd64-deb
           path: .build/linux/deb/release/*.deb
           if-no-files-found: error
 
       - name: Upload portable desktop bundle
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: guardrails-ide-linux-amd64-portable
           path: ../VSCode-linux-x64
