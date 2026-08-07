@@ -49,6 +49,14 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace --locked
 ```
 
+## Linux installer builds
+
+Run the **Package GuardRails IDE (Linux)** workflow from the Actions tab to build
+the branded x64 Debian installer. The completed run publishes two downloadable
+artifacts: `guardrails-ide-linux-amd64-deb` for installation with `apt`, and a
+portable desktop bundle. These are unsigned development builds; release signing
+for Windows and macOS requires the corresponding signing certificates.
+
 ## Security invariants
 
 - No matching capability means denial; explicit denies override allows.

@@ -1,0 +1,102 @@
+name: Package GuardRails IDE (Linux)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardrails-linux-package-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NPM_ARCH: x64
+  VSCODE_ARCH: x64
+  VSCODE_QUALITY: oss
+
+jobs:
+  package:
+    name: Build Debian installer
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out GuardRails IDE
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install Linux packaging prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            build-essential \
+            fakeroot \
+            libkrb5-dev \
+            libx11-dev \
+            libx11-xcb-dev \
+            libxkbfile-dev \
+            libnotify-bin \
+            pkg-config
+
+      - name: Install build-tool dependencies
+        working-directory: build
+        run: npm ci
+
+      - name: Prepare the Linux toolchain
+        run: |
+          source ./build/azure-pipelines/linux/setup-env.sh
+          node build/npm/preinstall.ts
+        env:
+          npm_config_arch: ${{ env.NPM_ARCH }}
+
+      - name: Install application dependencies
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+          ONNXRUNTIME_NODE_INSTALL: skip
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+          npm_config_arch: ${{ env.NPM_ARCH }}
+
+      - name: Download built-in extensions
+        run: node build/lib/builtInExtensions.ts
+
+      - name: Build the desktop application
+        run: |
+          npm run gulp core-ci
+          npm run gulp vscode-linux-x64-min-ci
+
+      - name: Create the Debian installer
+        run: |
+          npm run gulp vscode-linux-x64-prepare-deb
+          npm run gulp vscode-linux-x64-build-deb
+          mkdir -p .build/linux/deb/release
+          cp .build/linux/deb/amd64/deb/*.deb .build/linux/deb/release/
+
+      - name: Verify package identity
+        run: |
+          package_path=$(find .build/linux/deb/release -name '*.deb' -print -quit)
+          test -n "$package_path"
+          test "$(dpkg-deb --field "$package_path" Package)" = "guardrails-ide"
+          test "$(dpkg-deb --field "$package_path" Architecture)" = "amd64"
+          test -x ../VSCode-linux-x64/guardrails-ide
+
+      - name: Upload Debian installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: guardrails-ide-linux-amd64-deb
+          path: .build/linux/deb/release/*.deb
+          if-no-files-found: error
+
+      - name: Upload portable desktop bundle
+        uses: actions/upload-artifact@v6
+        with:
+          name: guardrails-ide-linux-amd64-portable
+          path: ../VSCode-linux-x64
+          if-no-files-found: error
