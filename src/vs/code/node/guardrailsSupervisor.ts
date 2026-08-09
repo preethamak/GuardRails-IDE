@@ -6,7 +6,6 @@
 import { spawn } from 'child_process';
 import { randomBytes } from 'crypto';
 import { createConnection, type Socket } from 'net';
-import { hasKey, isObject } from '../../base/common/types.js';
 
 const LAUNCH_TOKEN_ENV = 'GUARDRAILS_SUPERVISOR_LAUNCH_TOKEN';
 const READY_LINE_LIMIT = 1024;
@@ -235,18 +234,20 @@ function isPrincipalId(value: string): boolean {
 }
 
 function isAcceptedResponse(value: unknown, principalId: string): boolean {
-	return isObject(value)
-		&& hasKey(value, { kind: true, protocol_version: true, principal_id: true })
-		&& value.kind === 'accepted'
-		&& value.protocol_version === PROTOCOL_VERSION
-		&& value.principal_id === principalId;
+	return isRecord(value)
+		&& value['kind'] === 'accepted'
+		&& value['protocol_version'] === PROTOCOL_VERSION
+		&& value['principal_id'] === principalId;
 }
 
 function isStatusResponse(value: unknown): value is { readonly policy_engine: 'ready'; readonly filesystem_broker: 'ready' } {
-	return isObject(value)
-		&& hasKey(value, { kind: true, protocol_version: true, policy_engine: true, filesystem_broker: true })
-		&& value.kind === 'status'
-		&& value.protocol_version === PROTOCOL_VERSION
-		&& value.policy_engine === 'ready'
-		&& value.filesystem_broker === 'ready';
+	return isRecord(value)
+		&& value['kind'] === 'status'
+		&& value['protocol_version'] === PROTOCOL_VERSION
+		&& value['policy_engine'] === 'ready'
+		&& value['filesystem_broker'] === 'ready';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
