@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommentModeController, CommentsModel, EditorController, EditorModel, EditorView, GutterMarker, OffsetRange, Selection, StringEdit, StringValue, VsCodeV2CommentsView, findNodeOffsetById, taskCheckboxRange } from '@vscode/markdown-editor';
-import { Disposable, autorun, observableValue } from '@vscode/markdown-editor/observables';
+import { CommentModeController, CommentsModel, EditorController, EditorModel, EditorView, GutterMarker, OffsetRange, Selection, StringEdit, StringValue, CommentsView, findNodeOffsetById, taskCheckboxRange } from '@vscode/markdown-editor';
+import { Disposable, autorun, observableValue } from '@vscode/observables';
 import mermaid from 'mermaid';
 import 'katex/dist/katex.min.css';
 import '@vscode/markdown-editor/editor.css';
 import '@vscode/markdown-editor/themes/vscode-default.css';
 import '@vscode/markdown-editor/commentInput.css';
-import '@vscode/markdown-editor/vscodeCommentWidgetV2.css';
+import '@vscode/markdown-editor/commentWidget.css';
 import './markdownEditor.css';
 import { WebviewSyntaxHighlighter } from './syntaxHighlighter';
 
@@ -40,7 +40,7 @@ class Editor extends Disposable {
 	#initialized = false;
 
 	readonly #comments = new CommentsModel();
-	#commentsView: VsCodeV2CommentsView | undefined;
+	#commentsView: CommentsView | undefined;
 	/** Whether the workbench feedback store currently accepts new comments for this resource. */
 	readonly #acceptsComments = observableValue<boolean>('acceptsComments', false);
 	readonly #vscode = acquireVsCodeApi();
@@ -173,15 +173,8 @@ class Editor extends Disposable {
 		}));
 		host.appendChild(view.element);
 
-		// Render comments as the VS Code V2 markdown cards. The card colours come
-		// from the webview's own `--vscode-*` theme variables; `theme` only picks
-		// the light/dark token wrapper. `resolveLine` maps a comment's start offset
-		// to a 1-based line for the card header.
-		const isLight = document.body.classList.contains('vscode-light');
-		this.#commentsView = this._register(new VsCodeV2CommentsView(this.#comments, view, {
-			theme: isLight ? 'light' : 'dark',
-			resolveLine: (offset) => model.sourceText.get().value.slice(0, offset).split('\n').length,
-		}));
+		// Render posted comments with the package's supported comment view.
+		this.#commentsView = this._register(new CommentsView(this.#comments, view));
 		// The comment input (the gdocs-style "add a comment" affordance) is only
 		// useful when the workbench feedback store will actually accept the comment;
 		// otherwise submitting is a no-op. Mount the controller only while the

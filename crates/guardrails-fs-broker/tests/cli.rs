@@ -18,7 +18,7 @@ fn cli_reads_allowed_source_end_to_end() {
 
     assert!(output.status.success());
     assert_eq!(output.stdout, b"pub fn safe() {}\n");
-    assert!(output.stderr.is_empty());
+    assert_eq!(output.stderr, [] as [u8; 0]);
 }
 
 #[test]
@@ -37,7 +37,7 @@ fn cli_blocks_environment_files_even_with_broad_allow() {
         .unwrap();
 
     assert!(!output.status.success());
-    assert!(output.stdout.is_empty());
+    assert_eq!(output.stdout, [] as [u8; 0]);
     let stderr = String::from_utf8(output.stderr).unwrap();
     assert!(stderr.contains("builtin-root-secret-deny"));
     assert!(stderr.contains("audit: deny ExplicitDeny"));

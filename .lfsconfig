@@ -1,0 +1,4 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Immutable upstream Code OSS test assets are hosted by the upstream repository.
+[lfs]
+	url = https://github.com/microsoft/vscode.git/info/lfs

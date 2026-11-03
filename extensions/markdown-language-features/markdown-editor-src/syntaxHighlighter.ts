@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { LengthEdit, OffsetRange, StringEdit } from '@vscode/markdown-editor';
-import { ISettableObservable, ITransaction, observableValue } from '@vscode/markdown-editor/observables';
+import { ISettableObservable, ITransaction, observableValue } from '@vscode/observables';
 
 /**
  * A single coloured run as returned by the `documentSyntaxHighlighting`

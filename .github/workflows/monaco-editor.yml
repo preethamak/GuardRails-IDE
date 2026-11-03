@@ -11,6 +11,12 @@ on:
       - release/*
 permissions: {}
 
+# Checkout fetches LFS objects before the worktree .lfsconfig exists.
+env:
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: lfs.url
+  GIT_CONFIG_VALUE_0: https://github.com/microsoft/vscode.git/info/lfs
+
 jobs:
   main:
     name: Monaco Editor checks
