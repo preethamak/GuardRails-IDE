@@ -5,7 +5,7 @@
 
 use serde::{Deserialize, Serialize};
 use std::{
-    io::{self, BufRead, BufReader, Write},
+    io::{self, BufRead, BufReader, Read, Write},
     net::{SocketAddr, TcpListener, TcpStream},
 };
 use thiserror::Error;
@@ -174,7 +174,9 @@ fn valid_principal(value: &str) -> bool {
 
 fn read_message(reader: &mut impl BufRead) -> Result<Result<ClientMessage, ()>, SupervisorError> {
     let mut line = String::new();
-    let size = reader.read_line(&mut line)?;
+    let size = reader
+        .take((MAX_MESSAGE_BYTES + 1) as u64)
+        .read_line(&mut line)?;
     if size == 0 || size > MAX_MESSAGE_BYTES || !line.ends_with('\n') {
         return Ok(Err(()));
     }
@@ -191,7 +193,7 @@ fn write_message(stream: &mut TcpStream, response: &ServerMessage) -> Result<(),
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{io::Read, thread};
+    use std::thread;
 
     fn request(token: &str, principal: &str, version: u16) -> String {
         format!(
@@ -209,7 +211,13 @@ mod tests {
         let server = thread::spawn(move || supervisor.serve_once().expect("serve"));
         let mut client = TcpStream::connect(address).expect("connect");
         client.write_all(request.as_bytes()).expect("request");
-        if request.contains("launch-token") {
+        let mut response = String::new();
+        let mut reader = BufReader::new(client.try_clone().expect("clone"));
+        reader.read_line(&mut response).expect("handshake response");
+        if matches!(
+            serde_json::from_str::<ServerMessage>(&response),
+            Ok(ServerMessage::Accepted(_))
+        ) {
             client
                 .write_all(b"{\"kind\":\"status\"}\n")
                 .expect("status");
@@ -217,13 +225,19 @@ mod tests {
         client
             .shutdown(std::net::Shutdown::Write)
             .expect("shutdown");
-        let mut response = String::new();
-        match client.read_to_string(&mut response) {
+        match reader.read_to_string(&mut response) {
             Ok(_) => {}
             Err(error) if error.kind() == io::ErrorKind::ConnectionReset => {}
             Err(error) => panic!("response: {error}"),
         }
         (server.join().expect("join"), response)
+    }
+
+    #[test]
+    fn rejects_oversized_messages_without_reading_the_entire_stream() {
+        let mut input = io::Cursor::new(vec![b'x'; MAX_MESSAGE_BYTES * 2]);
+        assert!(read_message(&mut input).expect("read").is_err());
+        assert_eq!(input.position(), (MAX_MESSAGE_BYTES + 1) as u64);
     }
 
     #[test]

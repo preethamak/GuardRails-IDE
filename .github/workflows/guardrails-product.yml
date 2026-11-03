@@ -16,5 +16,5 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: node scripts/verify-guardrails-product.mjs
+      - run: node scripts/verify-guardrails-product.mts
       - run: cargo test --workspace --locked
