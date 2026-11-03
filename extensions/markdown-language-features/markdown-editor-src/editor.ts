@@ -10,7 +10,7 @@ import 'katex/dist/katex.min.css';
 import '@vscode/markdown-editor/editor.css';
 import '@vscode/markdown-editor/themes/vscode-default.css';
 import '@vscode/markdown-editor/commentInput.css';
-import '@vscode/markdown-editor/vscodeCommentWidgetV2.css';
+import '@vscode/markdown-editor/commentWidget.css';
 import './markdownEditor.css';
 import { WebviewSyntaxHighlighter } from './syntaxHighlighter';
 
